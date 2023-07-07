@@ -1,0 +1,114 @@
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-12 col-sm-3">
+      <div class="card">
+        <div class="card-header bg-white border-0 py-3">
+          <h4 class="m-0">Stops ({{stopsList.length || 0}})</h4>
+        </div>
+        <div class="card-body px-0">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" *ngFor="let stop of stopsList">
+              <div class="d-flex gap-2">
+                <i class="bi bi-cursor fs-4"></i>
+                <div class="d-flex flex-column flex-grow-1">
+                  <span class="m-0 h5">{{ stop.stopName }}</span>
+                  <span class="text-sm text-muted">{{ stop.address }}</span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-9">
+      <div class="card">
+        <div class="card-header bg-white border-0 py-3">
+          <h4 class="m-0">Buses ({{ busList.length || 0 }})</h4>
+        </div>
+        <div class="card-body p-0">
+          <app-no-data-found *ngIf="busList.length === 0" message="No Buses"></app-no-data-found>
+          <div class="table-responsive m-0" *ngIf="busList.length !== 0">
+            <table class="table table-flush m-0">
+              <thead class="bg-light">
+                <tr>
+                  <th scope="col">Sr. No</th>
+                  <th scope="col">Registration Number / Type and Price</th>
+                  <th scope="col">Filled Seats - Total Seats</th>
+                  <th scope="col">Trip Start Time - Trip End Time</th>
+                  <!-- <th scope="col">Price</th> -->
+                  <th scope="col">Status</th>
+                  <th scope="col">Apply For Bus Pass</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of busList; index as idx">
+                  <td>{{ idx + 1 }}.</td>
+                  <td>
+                    <div class="d-flex gap-3 align-items-center">
+                      <div class="h4">
+                        <span class="badge bg-primary">{{ user.pricePerSeat | currency:'INR':'symbol':'1.0' }}</span>
+                      </div>
+                      <div class="d-flex flex-column flex-grow-1">
+                        <span class="h5 m-0 mb-1">{{ user.registrationNumber }}</span>
+                        <span class="text-sm text-muted">{{ vehicleTypes[user.type || 0] }}</span>
+                      </div>
+                      
+                    </div>
+                  </td>
+                  <td>{{ user.filledSeats || 0 }} - {{ user.totalSeats || 0 }}</td>
+                  <td>{{ user.tripStartTime }} - {{ user.tripEndTime }}</td>
+                  <!-- <td class="fw-bold h5">{{ user.pricePerSeat | currency:'INR':'symbol':'1.0' }}</td> -->
+                  <td>
+                    <div class="h5 m-0" [ngSwitch]="user.isActiveOnRoad">
+                      <span class="badge rounded-pill bg-success" *ngSwitchCase="1">Active</span>
+                      <span class="badge rounded-pill bg-danger" *ngSwitchCase="0">Inactive</span>
+                    </div>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-sm btn-primary" (click)="openConfirmationModal(confirmationModal, user)">Apply</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #confirmationModal let-modal>
+  <div class="modal-header border-0">
+    <div class="d-flex flex-column">
+      <span class="modal-title fw-bold">Confirmation</span>
+      <span class="text-muted text-sm">Note: Bus Pass will be valid for 1 year after approval</span>
+    </div>
+    <button type="button" class="btn" aria-label="Close" id="closeAddNewStaffModal" #closeAddNewStaffModal
+      (click)="modal.dismiss('Cross click')">
+      <i class="bi bi-x fs-3"></i>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="d-flex flex-column">
+      <span class="text-sm text-muted">Route Name</span>
+      <span class="h5">{{ selectedModal.routeName }}</span>
+    </div>
+    <div class="d-flex flex-column">
+      <span class="text-sm text-muted">Bus Registeration Number</span>
+      <span class="h5">{{ selectedModal.busRegNumber }}</span>
+    </div>
+    <div class="d-flex flex-column">
+      <span class="text-sm text-muted">Bus Type</span>
+      <span class="h5">{{ vehicleTypes[selectedModal.busType] }}</span>
+    </div>
+    <div class="d-flex flex-column">
+      <span class="text-sm text-muted">Price</span>
+      <span class="h5">{{ selectedModal.price }}</span>
+    </div>
+    
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-sm btn-light" (click)="modal.dismiss()">Cancel</button>
+    <button class="btn btn-sm btn-success" (click)="saveBusPass()">Confirm</button>
+  </div>
+</ng-template>

@@ -1,0 +1,80 @@
+<div class="container-fluid mt-3">
+  <div class="row" *ngIf="passes.length === 0">
+    <div class="col">
+      <div class="card">
+        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+          <app-no-data-found title="No Passes" message="You have right now. Apply for new pass"></app-no-data-found>
+          <button type="button" class="btn btn-outline-primary mt-4" routerLink="/routes">
+            Appy For Bus Pass
+            <i class="bi bi-chevron-double-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" *ngIf="passes.length !== 0">
+    <div class="col-12 col-sm-6 col-md-4" *ngFor="let route of passes; index as idx">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="text-primary">{{ route.routeName }}</h4>
+          <h5 class="text-muted line-limit">{{ route.busRegNumber }}</h5>
+          <div class="d-flex justify-content-between my-1">
+            <span>Bus Type</span>
+            <span class="fw-bold">{{ vehicleTypes[route.busType] }}</span>
+          </div>
+          <div class="d-flex justify-content-between my-1">
+            <span>Requested On</span>
+            <span class="fw-bold">{{ route.requestedOn | date: 'MMMM dd, yyyy, hh:mm a' }}</span>
+          </div>
+          <div class="d-flex justify-content-between my-1">
+            <span>Valid Till</span>
+            <span class="fw-bold">{{ (route?.validTill | date: 'MMMM dd, yyyy, hh:mm a') || "-" }}</span>
+          </div>
+          <div class="d-flex justify-content-between my-1">
+            <span>Status</span>
+            <div [ngSwitch]="route.status" class="h5">
+              <span class="badge rounded-pill bg-primary" *ngSwitchCase="1">Requested</span>
+              <span class="badge rounded-pill bg-success" *ngSwitchCase="2">Approved</span>
+              <span class="badge rounded-pill bg-danger" *ngSwitchCase="3">Cancelled</span>
+              <span class="badge rounded-pill bg-danger" *ngSwitchCase="4">Cancelled By User</span>
+              <span class="badge rounded-pill bg-warning" *ngSwitchCase="5">Suspended</span>
+              <span class="badge rounded-pill bg-secondary" *ngSwitchCase="-1">Requested For Cancellation</span>
+              <span class="badge rounded-pill bg-secondary" *ngSwitchCase="-2">Requested For Suspension</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary"
+            (click)="openConfirmationModal(confirmationModalRef, route, -2)" *ngIf="route.status === 2">
+            Request For Suspension
+          </button>
+
+          <button type="button" class="btn btn-sm btn-outline-danger"
+            (click)="openConfirmationModal(confirmationModalRef, route, -1)"
+            *ngIf="route.status === 2 || route.status === -2 || route.status === -3">
+            Request For Cancellation
+          </button>
+
+          <button type="button" class="btn btn-sm btn-outline-danger"
+            (click)="openConfirmationModal(confirmationModalRef, route, 4)" *ngIf="route.status === 1">
+            Cancel Request
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #confirmationModalRef let-modal>
+  <div class="modal-header border-0">
+    <span class="modal-title font-weight-bold">Are you sure for this operation?</span>
+    <button type="button" class="btn" aria-label="Close" id="closeAddNewStaffModal" #closeAddNewStaffModal
+      (click)="modal.dismiss('Cross click')">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+  <div class="modal-footer border-0">
+    <button class="btn btn-sm btn-light" (click)="modal.dismiss()">No</button>
+    <button class="btn btn-sm btn-success" (click)="updateStatus()">Yes</button>
+  </div>
+</ng-template>

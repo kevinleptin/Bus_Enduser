@@ -1,0 +1,30 @@
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-12 col-sm-6 col-md-4" *ngFor="let route of routes; index as idx">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="text-primary">{{ route.title }}</h4>
+          <p class="text-muted line-limit">{{ route.description }}</p>
+          <div class="d-flex justify-content-between">
+            <span>
+              <i class="bi bi-truck-front-fill text-primary"></i>
+              Total Buses
+            </span>
+            <span class="fw-bold text-primary">{{ route.totalBuses || 0 }}</span>
+          </div>
+          <div class="d-flex justify-content-between mt-1">
+            <span>
+              <i class="bi bi-cursor-fill text-primary"></i>
+              Total Stops
+            </span>
+            <span class="fw-bold text-primary">{{ route.totalStops || 0 }}</span>
+          </div>
+        </div>
+        <div class="card-footer bg-white border-0">
+          <button type="button" class="btn btn-sm btn-outline-primary rounded-lg float-end" 
+           [routerLink]="[route.routeId, 'details']">Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
